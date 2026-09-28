@@ -397,8 +397,7 @@ describe('taskService', () => {
       expect(done.priority).toBe('high');
     });
   });
-});
-```
+});```
 
 ### `tests/tasks.routes.test.js` — integration tests, Supertest (30 tests)
 
@@ -634,8 +633,7 @@ describe('Task API routes', () => {
       await request(app).get('/tasks/nope').expect(404);
     });
   });
-});
-```
+});```
 
 ### `tests/validators.test.js` — unit tests (18 tests)
 
@@ -724,14 +722,11 @@ describe('validateUpdateTask', () => {
   test('allows a null dueDate (clears the date)', () => {
     expect(validateUpdateTask({ dueDate: null })).toBeNull();
   });
-});
-```
+});```
 
 ---
 
 ## What's next
 
-Day 2: fix Bug 1 (pagination) and confirm its 5 regression tests turn green, then
-add `PATCH /tasks/:id/assign` with its own tests. Full details for each of the 7
-bugs — expected vs actual, discovery method, and a proposed fix — are in the
-[Bugs found](#bugs-found) section above.
+Full details for each of the 7 bugs — expected vs actual, discovery method, and a
+proposed fix — are in the [Bugs found](#bugs-found) section above.

@@ -88,7 +88,7 @@ describe('taskService', () => {
 
   describe('getPaginated', () => {
     test('page 1 returns the first items', () => {
-      // BUG 1: offset = page * limit (should be (page - 1) * limit).
+      // BUG 1 (fixed): offset was page * limit, so page 1 skipped the first page.
       for (let i = 1; i <= 4; i++) taskService.create({ title: `Task ${i}` });
       const page1 = taskService.getPaginated(1, 2);
       expect(page1.map((t) => t.title)).toEqual(['Task 1', 'Task 2']);
@@ -98,6 +98,24 @@ describe('taskService', () => {
       for (let i = 1; i <= 4; i++) taskService.create({ title: `Task ${i}` });
       const page2 = taskService.getPaginated(2, 2);
       expect(page2.map((t) => t.title)).toEqual(['Task 3', 'Task 4']);
+    });
+
+    test('clamps a page below 1 to the first page', () => {
+      for (let i = 1; i <= 4; i++) taskService.create({ title: `Task ${i}` });
+      expect(taskService.getPaginated(0, 2).map((t) => t.title)).toEqual(['Task 1', 'Task 2']);
+      expect(taskService.getPaginated(-3, 2).map((t) => t.title)).toEqual(['Task 1', 'Task 2']);
+    });
+
+    test('falls back to safe defaults for non-numeric input', () => {
+      for (let i = 1; i <= 4; i++) taskService.create({ title: `Task ${i}` });
+      expect(taskService.getPaginated('abc', 'abc')).toHaveLength(4);
+      expect(taskService.getPaginated(undefined, undefined)).toHaveLength(4);
+    });
+
+    test('never returns an empty page for a non-positive limit', () => {
+      for (let i = 1; i <= 3; i++) taskService.create({ title: `Task ${i}` });
+      expect(taskService.getPaginated(1, 0).length).toBeGreaterThan(0);
+      expect(taskService.getPaginated(1, -5).length).toBeGreaterThan(0);
     });
 
     test('returns empty when page is beyond range', () => {

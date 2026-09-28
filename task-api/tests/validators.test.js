@@ -1,4 +1,8 @@
-const { validateCreateTask, validateUpdateTask } = require('../src/utils/validators');
+const {
+  validateCreateTask,
+  validateUpdateTask,
+  validateAssign,
+} = require('../src/utils/validators');
 
 describe('validateCreateTask', () => {
   test('accepts a valid minimal body', () => {
@@ -81,5 +85,35 @@ describe('validateUpdateTask', () => {
 
   test('allows a null dueDate (clears the date)', () => {
     expect(validateUpdateTask({ dueDate: null })).toBeNull();
+  });
+});
+
+describe('validateAssign', () => {
+  test('accepts a non-empty string', () => {
+    expect(validateAssign({ assignee: 'ada' })).toBeNull();
+  });
+
+  test('accepts a name with surrounding whitespace (caller trims)', () => {
+    expect(validateAssign({ assignee: '  ada  ' })).toBeNull();
+  });
+
+  test('rejects a missing assignee', () => {
+    expect(validateAssign({})).toMatch(/assignee/);
+  });
+
+  test('rejects an empty string', () => {
+    expect(validateAssign({ assignee: '' })).toMatch(/assignee/);
+  });
+
+  test('rejects a whitespace-only string', () => {
+    expect(validateAssign({ assignee: '   ' })).toMatch(/assignee/);
+  });
+
+  test('rejects a non-string', () => {
+    expect(validateAssign({ assignee: 42 })).toMatch(/assignee/);
+  });
+
+  test('rejects null', () => {
+    expect(validateAssign({ assignee: null })).toMatch(/assignee/);
   });
 });
